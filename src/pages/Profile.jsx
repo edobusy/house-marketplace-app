@@ -19,8 +19,7 @@ import { Link } from 'react-router-dom'
 import ListingItem from '../components/ListingItem'
 
 const Profile = () => {
-  // On hard reload, it renders before it gets the auth data,
-  //meaning that 'Not Logged In' will be displayed even if you are logged in
+  // Get authentication instance
   const auth = getAuth()
 
   const [loading, setLoading] = useState(true)
@@ -28,6 +27,7 @@ const Profile = () => {
 
   const [changeDetails, setChangeDetails] = useState(false)
 
+  // Get user infor from auth
   const [formData, setFormData] = useState({
     name: auth.currentUser.displayName,
     email: auth.currentUser.email,
@@ -38,9 +38,11 @@ const Profile = () => {
   const navigate = useNavigate()
 
   useEffect(() => {
+    // On mount, fetch listings from firestore
     const fetchUserListings = async () => {
       const listingsRef = collection(db, 'listings')
 
+      // Filter listings linked to user, and order them by creation date in descending order
       const q = query(
         listingsRef,
         where('userRef', '==', auth.currentUser.uid),
@@ -70,6 +72,7 @@ const Profile = () => {
     navigate('/')
   }
 
+  // Change user deets
   const onSubmit = async () => {
     try {
       if (auth.currentUser.displayName !== name) {
@@ -98,7 +101,10 @@ const Profile = () => {
 
   const onDelete = async (listingId) => {
     if (window.confirm('Are you sure you want to delete?')) {
+      // Remove from firestore
       await deleteDoc(doc(db, 'listings', listingId))
+
+      // Update listings state
       const updatedListings = listings.filter(
         (listing) => listing.id !== listingId
       )

@@ -57,6 +57,7 @@ const EditListing = () => {
 
   // Redirect if listing is not user's
   useEffect(() => {
+    // Security check on mount
     if (listing && listing.userRef !== auth.currentUser.uid) {
       toast.error('You can not edit that listing')
       navigate('/')
@@ -82,7 +83,7 @@ const EditListing = () => {
     fetchListing()
   }, [params.listingId, navigate])
 
-  // Sets userRef to logged in user
+  // Update formData with the current user's id
   useEffect(() => {
     if (isMounted) {
       onAuthStateChanged(auth, (user) => {
@@ -105,6 +106,7 @@ const EditListing = () => {
 
     setLoading(true)
 
+    // Data validation
     if (discountedPrice >= regularPrice) {
       setLoading(false)
       toast.error('Discounted price needs to be less than regular price')
@@ -117,6 +119,7 @@ const EditListing = () => {
       return
     }
 
+    // Get latitude and longitude from Google's Geocoding API
     let geolocation = {}
     let location
 
@@ -135,6 +138,7 @@ const EditListing = () => {
           ? undefined
           : data.results[0]?.formatted_address
 
+      // If address does not exist, or fetch did not work, send error
       if (location === undefined || location.includes('undefined')) {
         setLoading(false)
         toast.error('Please enter a correct address')
@@ -148,7 +152,10 @@ const EditListing = () => {
     // Store image in firebase
     const storeImage = async (image) => {
       return new Promise((resolve, reject) => {
+        // Get storage instance
         const storage = getStorage()
+
+        // Create unique filename
         const fileName = `${auth.currentUser.uid}-${image.name}-${uuidv4()}`
 
         const storageRef = ref(storage, 'images/' + fileName)
@@ -156,6 +163,7 @@ const EditListing = () => {
         const uploadTask = uploadBytesResumable(storageRef, image)
 
         uploadTask.on(
+          // If state changes, update console
           'state_changed',
           (snapshot) => {
             const progress =
@@ -177,7 +185,6 @@ const EditListing = () => {
           },
           () => {
             // Handle successful uploads on complete
-            // For instance, get the download URL: https://firebasestorage.googleapis.com/...
             getDownloadURL(uploadTask.snapshot.ref).then((downloadURL) => {
               resolve(downloadURL)
             })

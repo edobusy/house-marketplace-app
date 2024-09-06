@@ -25,9 +25,11 @@ const Listing = () => {
 
   useEffect(() => {
     const fetchListing = async () => {
+      // Fetch listing using id
       const docRef = doc(db, 'listings', params.listingId)
       const docSnap = await getDoc(docRef)
 
+      // set listing state with fetched data
       if (docSnap.exists()) {
         console.log(docSnap.data())
         setListing(docSnap.data())
@@ -43,15 +45,10 @@ const Listing = () => {
   }
   return (
     <main>
-      {/*
-      <Helmet>
-        <title>{listing.name}</title>
-      </Helmet>*/}
       <Swiper
         modules={[Navigation, Pagination, Scrollbar, A11y]}
         slidesPerView={1}
         pagination={{ clickable: true }}
-        //navigation
         style={{ height: '300px' }}
       >
         {listing.imageUrls.map((url, index) => {

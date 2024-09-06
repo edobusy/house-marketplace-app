@@ -27,14 +27,17 @@ const SignIn = () => {
     e.preventDefault()
 
     try {
+      // Get authentication instance
       const auth = getAuth()
 
+      // Process Sign in
       const userCredential = await signInWithEmailAndPassword(
         auth,
         email,
         password
       )
 
+      // If credentials are correct, and user is authenticated successfully, go back to Explore page
       if (userCredential.user) {
         navigate('/')
       }

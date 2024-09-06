@@ -14,7 +14,9 @@ const Contact = () => {
 
   useEffect(() => {
     const getLandlord = async () => {
+      // Get landlord data pointer
       const docRef = doc(db, 'users', params.landlordId)
+      // Get landlord info
       const docSnap = await getDoc(docRef)
 
       if (docSnap.exists()) {

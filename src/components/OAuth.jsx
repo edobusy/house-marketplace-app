@@ -11,8 +11,11 @@ const OAuth = () => {
 
   const onGoogleClick = async () => {
     try {
+      // Get authentication instance and Google authentication provider instance ready
       const auth = getAuth()
       const provider = new GoogleAuthProvider()
+
+      // Open Google popup window for sign in
       const result = await signInWithPopup(auth, provider)
       const user = result.user
 
@@ -29,6 +32,7 @@ const OAuth = () => {
         })
       }
 
+      // Return to Expore page
       navigate('/')
     } catch (e) {
       toast.error('Could not authorize with Google')

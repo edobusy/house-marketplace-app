@@ -16,6 +16,7 @@ import ListingItem from '../components/ListingItem'
 const Offers = () => {
   const [listings, setListings] = useState(null)
   const [loading, setLoading] = useState(true)
+  // Keep track of last listing fetched in current query. Assists pagination
   const [lastFetchedListing, setLastFetchedListing] = useState(null)
 
   useEffect(() => {
@@ -23,21 +24,21 @@ const Offers = () => {
       // Get reference
       const listingsRef = collection(db, 'listings')
 
-      //create a query
+      // Filter by offer, get first 10
       const q = query(
         listingsRef,
         where('offer', '==', true),
         orderBy('timestamp', 'desc'),
         limit(10)
       )
-      //execute query
+      // Execute query
       const querySnap = await getDocs(q)
 
       const lastVisible = querySnap.docs[querySnap.docs.length - 1]
 
       setLastFetchedListing(lastVisible)
 
-      //console.log(querySnap)
+      // Update listings state
       const listings = []
       querySnap.forEach((doc) => {
         return listings.push({
@@ -58,7 +59,7 @@ const Offers = () => {
     // Get reference
     const listingsRef = collection(db, 'listings')
 
-    //create a query
+    // Get more listings, start from the one after lastFetchedListing
     const q = query(
       listingsRef,
       where('offer', '==', true),
@@ -67,14 +68,15 @@ const Offers = () => {
       limit(10)
     )
 
-    //execute query
+    // Execute query
     const querySnap = await getDocs(q)
 
+    // Update lastFetchedListing
     const lastVisible = querySnap.docs[querySnap.docs.length - 1]
 
     setLastFetchedListing(lastVisible)
 
-    //console.log(querySnap)
+    // Add loaded listings to the state
     const listings = []
     querySnap.forEach((doc) => {
       return listings.push({

@@ -51,6 +51,7 @@ const CreateListing = () => {
   const navigate = useNavigate()
   const isMounted = useRef(true)
 
+  // Redirect if not logged in
   useEffect(() => {
     if (isMounted) {
       onAuthStateChanged(auth, (user) => {
@@ -75,6 +76,7 @@ const CreateListing = () => {
   const onSubmit = async (e) => {
     e.preventDefault()
 
+    // Data validation
     setLoading(true)
     if (parseInt(discountedPrice) >= parseInt(regularPrice)) {
       setLoading(false)
@@ -88,6 +90,7 @@ const CreateListing = () => {
       return
     }
 
+    // Get latitude and longitude from Google's Geocoding API
     let geolocation = {}
     let location
 
@@ -105,6 +108,7 @@ const CreateListing = () => {
         ? undefined
         : data.results[0]?.formatted_address
 
+    // If address does not exist, or fetch did not work, send error
     if (location === undefined || location.includes('undefined')) {
       setLoading(false)
       toast.error('Please enter a correct address')
@@ -114,7 +118,10 @@ const CreateListing = () => {
     // Store image in firebase
     const storeImage = async (image) => {
       return new Promise((resolve, reject) => {
+        // Get storage instance
         const storage = getStorage()
+
+        // Create unique filename
         const fileName = `${auth.currentUser.uid}-${image.name}-${uuidv4()}`
 
         const storageRef = ref(storage, 'images/' + fileName)
@@ -122,6 +129,7 @@ const CreateListing = () => {
         const uploadTask = uploadBytesResumable(storageRef, image)
 
         uploadTask.on(
+          // If state changes, update console
           'state_changed',
           (snapshot) => {
             const progress =
@@ -143,7 +151,6 @@ const CreateListing = () => {
           },
           () => {
             // Handle successful uploads on complete
-            // For instance, get the download URL: https://firebasestorage.googleapis.com/...
             getDownloadURL(uploadTask.snapshot.ref).then((downloadURL) => {
               resolve(downloadURL)
             })
@@ -170,12 +177,10 @@ const CreateListing = () => {
     formDataCopy.location = address
     delete formDataCopy.images
     delete formDataCopy.address
-    //location && (formDataCopy.location = location)
-
     !formDataCopy.offer && delete formDataCopy.discountedPrice
 
+    // Create listing
     const docRef = await addDoc(collection(db, 'listings'), formDataCopy)
-
     setLoading(false)
     toast.success('Listing saved!')
     navigate(`/category/${formDataCopy.type}/${docRef.id}`)

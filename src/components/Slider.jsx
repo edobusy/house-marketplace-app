@@ -34,11 +34,12 @@ const Slider = () => {
       })
 
       setListings(listings)
+      // Set loading to false once listings are fetched
       setLoading(false)
     }
 
     fetchListings()
-  }, [])
+  }, []) // Empty array ensures the effect runs only once
 
   if (loading) {
     return <Spinner />

@@ -40,7 +40,6 @@ const Category = () => {
 
       setLastFetchedListing(lastVisible)
 
-      //console.log(querySnap)
       const listings = []
       querySnap.forEach((doc) => {
         return listings.push({
@@ -76,7 +75,6 @@ const Category = () => {
 
     setLastFetchedListing(lastVisible)
 
-    //console.log(querySnap)
     const listings = []
     querySnap.forEach((doc) => {
       return listings.push({

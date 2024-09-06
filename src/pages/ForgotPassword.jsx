@@ -15,7 +15,10 @@ const ForgotPassword = () => {
     e.preventDefault()
 
     try {
+      // Get authorisation instance
       const auth = getAuth()
+
+      // Send email for reset
       await sendPasswordResetEmail(auth, email)
       toast.success('Email was sent!')
     } catch (e) {

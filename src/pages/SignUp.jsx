@@ -34,8 +34,10 @@ const SignUp = () => {
     e.preventDefault()
 
     try {
+      // Get authentication instance
       const auth = getAuth()
 
+      // Create new user
       const userCredential = await createUserWithEmailAndPassword(
         auth,
         email,
@@ -44,14 +46,17 @@ const SignUp = () => {
 
       const user = userCredential.user
 
+      // Update current profile with the one just created
       updateProfile(auth.currentUser, {
         displayName: name,
       })
 
+      // Remove password from user data before sending it to the firestore
       const formDataCopy = { ...formData }
       delete formDataCopy.password
       formDataCopy.timesamp = serverTimestamp()
 
+      // Send it to firestore
       await setDoc(doc(db, 'users', user.uid), formDataCopy)
 
       navigate('/')
